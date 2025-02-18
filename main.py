@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from langchain_core.messages import BaseMessage, HumanMessage
 from langgraph.graph.message import add_messages
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.types import interrupt
+from langgraph.types import interrupt, Command
 
 load_dotenv()
 
@@ -44,10 +44,21 @@ graph.get_graph().draw_mermaid_png(output_file_path="main-flow.png")
 if __name__ == "__main__":
     config = {"configurable": {"thread_id": "test-thread"}}
     print("START!")
+    interrupted = False
 
     while True:
         user_input = input("\n> ")
-        initial_state = {"messages": [HumanMessage(content=user_input)]}
-        for event in graph.stream(initial_state, config=config):
+
+        state = (
+            Command(resume=user_input)
+            if interrupted
+            else {"messages": [HumanMessage(content=user_input)]}
+        )
+
+        for event in graph.stream(state, config=config):
             print(event)
             print("--------------------------------")
+            if isinstance(event, dict) and "__interrupt__" in event:
+                interrupted = True
+            else:
+                interrupted = False
