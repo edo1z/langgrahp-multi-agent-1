@@ -1,0 +1,47 @@
+# Pythonのバイトコードやキャッシュファイル
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 配布・パッケージ化関連
+build/
+dist/
+.eggs/
+*.egg-info/
+
+# 仮想環境関連
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# PyInstaller関連
+*.spec
+
+# テストやカバレッジレポート
+htmlcov/
+.tox/
+.nox/
+.coverage*
+.cache/
+
+# ログやDBファイル
+*.log
+*.sqlite3
+
+# Jupyter Notebookのチェックポイント
+.ipynb_checkpoints
+
+# VSCodeの設定
+.vscode/
+
+# macOS特有のファイル
+.DS_Store
+
+# 環境変数ファイル
+.env
+
+# pyenv関連
+.python-version
