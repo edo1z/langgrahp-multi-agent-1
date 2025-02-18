@@ -15,18 +15,36 @@ load_dotenv()
 
 class State(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
+    number: int
 
 
 def a1(state: State, config) -> State:
     print("a1", config["metadata"])
-    return state
+    return {"number": 1}
 
 
 def a2(state: State, config) -> State:
     print("a2", config["metadata"])
-    msg = interrupt("hello")
-    print(msg)
-    return state
+
+    for event in graph2.stream(state, config=config):
+        print(event)
+        print("--------------------------------")
+        if isinstance(event, dict) and "__interrupt__" in event:
+            print("[grahp2] interrupt!")
+
+    return {"number": 2}
+
+
+def b1(state: State, config) -> State:
+    print("b1", config["metadata"])
+    return {"number": 3}
+
+
+def b2(state: State, config) -> State:
+    print("b2", config["metadata"])
+    number = interrupt("hello")
+    print(number)
+    return {"number": number}
 
 
 builder = StateGraph(State)
@@ -40,6 +58,18 @@ builder.add_edge("a2", END)
 
 graph = builder.compile(checkpointer=MemorySaver())
 graph.get_graph().draw_mermaid_png(output_file_path="main-flow.png")
+
+builder2 = StateGraph(State)
+
+builder2.add_node("b1", b1)
+builder2.add_node("b2", b2)
+
+builder2.set_entry_point("b1")
+builder2.add_edge("b1", "b2")
+builder2.add_edge("b2", END)
+
+graph2 = builder2.compile()
+graph2.get_graph().draw_mermaid_png(output_file_path="main-flow2.png")
 
 if __name__ == "__main__":
     config = {"configurable": {"thread_id": "test-thread"}}
@@ -59,6 +89,7 @@ if __name__ == "__main__":
             print(event)
             print("--------------------------------")
             if isinstance(event, dict) and "__interrupt__" in event:
+                print("[grahp1] interrupt!")
                 interrupted = True
             else:
                 interrupted = False
