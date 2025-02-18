@@ -85,8 +85,8 @@ if __name__ == "__main__":
         )
 
         for event in graph.stream(state, config=config):
-            print(event)
-            print("--------------------------------")
+            print("[graph1]", event)
+            print("[graph1]--------------------------------")
             if isinstance(event, dict) and "__interrupt__" in event:
                 interrupt_value = event["__interrupt__"][0].value
                 print(interrupt_value)
