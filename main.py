@@ -27,8 +27,8 @@ def a2(state: State, config) -> State:
     print("a2", config["metadata"])
 
     for event in graph2.stream(state, config=config):
-        print(event)
-        print("--------------------------------")
+        print("[graph2]", event)
+        print("[graph2]--------------------------------")
         if isinstance(event, dict) and "__interrupt__" in event:
             print("[grahp2] interrupt!")
 
@@ -43,7 +43,6 @@ def b1(state: State, config) -> State:
 def b2(state: State, config) -> State:
     print("b2", config["metadata"])
     number = interrupt("hello")
-    print(number)
     return {"number": number}
 
 
@@ -89,7 +88,8 @@ if __name__ == "__main__":
             print(event)
             print("--------------------------------")
             if isinstance(event, dict) and "__interrupt__" in event:
-                print("[grahp1] interrupt!")
+                interrupt_value = event["__interrupt__"][0].value
+                print(interrupt_value)
                 interrupted = True
             else:
                 interrupted = False
