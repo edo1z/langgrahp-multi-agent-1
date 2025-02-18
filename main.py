@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from langchain_core.messages import BaseMessage, HumanMessage
 from langgraph.graph.message import add_messages
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.types import interrupt
 
 load_dotenv()
 
@@ -16,13 +17,15 @@ class State(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
 
 
-def a1(state: State) -> State:
-    print("a1")
+def a1(state: State, config) -> State:
+    print("a1", config["metadata"])
     return state
 
 
-def a2(state: State) -> State:
-    print("a2")
+def a2(state: State, config) -> State:
+    print("a2", config["metadata"])
+    msg = interrupt("hello")
+    print(msg)
     return state
 
 
